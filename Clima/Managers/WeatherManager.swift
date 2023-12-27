@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct WeatherManager: WeatherManagerProtocol {
     var networkManager: NetworkManagerProtocol
@@ -20,7 +21,17 @@ struct WeatherManager: WeatherManagerProtocol {
             throw error
         }
     }
-    
+
+    func fetchWeather(from coordinate: CLLocationCoordinate2D) async throws -> WeatherModel {
+        let url = "\(CommonConstants.weatherBaseUrlString)&lat=\(coordinate.latitude)&lon=\(coordinate.longitude)"
+        do {
+            let weatherData: WeatherData = try await networkManager.getRequest(from: url)
+            return self.parseWeatherModel(from: weatherData)
+        } catch {
+            throw error
+        }
+    }
+
     private func parseWeatherModel(from weatherData: WeatherData) -> WeatherModel {
         return WeatherModel(cityName: weatherData.name, currentTemp: weatherData.main.temp, iconId: weatherData.weather.first!.id)
     }

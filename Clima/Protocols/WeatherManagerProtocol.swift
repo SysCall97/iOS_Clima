@@ -7,7 +7,9 @@
 //
 
 import Foundation
+import CoreLocation
 
 protocol WeatherManagerProtocol {
     func fetchWeather(from cityName: String) async throws -> WeatherModel
+    func fetchWeather(from coordinate: CLLocationCoordinate2D) async throws -> WeatherModel
 }
