@@ -15,6 +15,7 @@ class WeatherViewController: UIViewController {
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     //MARK: Attributes
     public var manager: WeatherManagerProtocol!
@@ -34,13 +35,19 @@ class WeatherViewController: UIViewController {
     private func startFetchingWeather() {
         guard let cityName = self.searchTextField.text else { return }
         self.searchTextField.endEditing(true)
+        self.view.isUserInteractionEnabled = false
+        self.activityIndicator.startAnimating()
         Task {
             do {
                 let weatherModel = try await manager.fetchWeather(from: cityName)
-                self.updateUILabels(with: weatherModel.cityName, String(weatherModel.currentTemp))
+                self.updateUI(with: weatherModel)
+                self.activityIndicator.stopAnimating()
+                self.view.isUserInteractionEnabled = true
             } catch let error as NetworkError {
-                var message = error.message
+                let message = error.message
+                self.activityIndicator.stopAnimating()
                 self.showAlert(with: message)
+                self.view.isUserInteractionEnabled = true
             }
         }
     }
@@ -53,10 +60,13 @@ class WeatherViewController: UIViewController {
         }
     }
     
-    private func updateUILabels(with cityName: String, _ temp: String) {
+    private func updateUI(with model: WeatherModel) {
         DispatchQueue.main.async {
-            self.cityLabel.text = cityName
-            self.temperatureLabel.text = temp
+            self.cityLabel.text = model.cityName
+            self.temperatureLabel.text = String(format: "%.1f", model.currentTemp)
+            if let image = UIImage(named: model.iconName) {
+                self.conditionImageView.image = image
+            }
         }
     }
 }

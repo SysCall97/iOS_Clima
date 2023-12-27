@@ -22,27 +22,7 @@ struct WeatherManager: WeatherManagerProtocol {
     }
     
     private func parseWeatherModel(from weatherData: WeatherData) -> WeatherModel {
-        let icon = self.parseIconString(from: weatherData.weather.first!.id)
-        return WeatherModel(cityName: weatherData.name, currentTemp: weatherData.main.temp, icon: icon)
-    }
-    
-    private func parseIconString(from weatherId: Int) -> String {
-        switch weatherId {
-        case 200...232:
-            return "cloud.bolt"
-        case 300...321:
-            return "cloud.drizzle"
-        case 500...531:
-            return "cloud.rain"
-        case 600...622:
-            return "cloud.snow"
-        case 701...781:
-            return "cloud.fog"
-        case 801...804:
-            return "cloud.bolt"
-        default:
-            return "cloud.max"
-        }
+        return WeatherModel(cityName: weatherData.name, currentTemp: weatherData.main.temp, iconId: weatherData.weather.first!.id)
     }
     
 }
