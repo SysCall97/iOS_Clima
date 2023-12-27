@@ -23,7 +23,7 @@ enum NetworkError: Error {
             case .notFound:
                 return "City not found"
             case .authenticationError:
-                return "Authenticatio failed"
+                return "Authentication failed"
             case .serverError:
                 return "Server error"
             case .noInternetConnection:
